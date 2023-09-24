@@ -1,5 +1,11 @@
 local M = {}
-local notify = require "notify"
+
+local present, notify = pcall(require, "notify")
+
+if not present then
+  return
+end
+
 local lsp_loader = require "lsp_loader"
 local plugin_updator = require "plugin_updator"
 
