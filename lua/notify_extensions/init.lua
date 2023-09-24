@@ -1,7 +1,7 @@
 local M = {}
 local notify = require "notify"
-local lsp_loader = require "lsp_loader"
-local plugin_updator = require "plugin_updator"
+local lsp_loader = require "lsp_loader"(notify)
+local plugin_updator = require "plugin_updator"(notify)
 
 local default_config = {
   lsp_loader = {
@@ -24,11 +24,11 @@ M.setup = function(config)
   local plugin_updator_enable = config.plugin_updator.enable or default_config.plugin_updator.enable
 
   if lsp_loader_enable then
-    table.insert(notify_extensions, lsp_loader(notify))
+    table.insert(notify_extensions, { lsp_loader = lsp_loader })
   end
 
   if plugin_updator_enable then
-    table.insert(notify_extensions, plugin_updator(notify))
+    table.insert(notify_extensions, { plugin_updator = plugin_updator })
   end
 
   init(notify_extensions)
