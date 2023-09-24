@@ -20,20 +20,20 @@ local default_config = {
 
 M.setup = function(config)
   local notify_extensions = {}
-  local lsp_loader_enable = (config ~= nil and config.lsp_loader.enable) or default_config.lsp_loader.enable
-  local plugin_updator_enable = (config ~= nil and config.plugin_updator.enable) or default_config.plugin_updator.enable
+  local lsp_loader_enable = config.lsp_loader.enable or default_config.lsp_loader.enable
+  local plugin_updator_enable = config.plugin_updator.enable or default_config.plugin_updator.enable
   local init = function(extensions)
-    for _, extension in ipairs(extensions) do
+    for _, extension in pairs(extensions) do
       extension()
     end
   end
 
   if lsp_loader_enable then
-    table.insert(notify_extensions, lsp_loader(notify))
+    notify_extensions.lsp_loader = lsp_loader(notify)
   end
 
   if plugin_updator_enable then
-    table.insert(notify_extensions, plugin_updator(notify))
+    notify_extensions.plugin_updator = plugin_updator(notify)
   end
 
   init(notify_extensions)
