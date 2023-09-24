@@ -20,9 +20,8 @@ local default_config = {
 
 M.setup = function(config)
   local notify_extensions = {}
-  local lsp_loader_enable = config.lsp_loader.enable or default_config.lsp_loader.enable
-  local plugin_updator_enable = config.plugin_updator.enable or default_config.plugin_updator.enable
-
+  local lsp_loader_enable = (config ~= nil and config.lsp_loader.enable) or default_config.lsp_loader.enable
+  local plugin_updator_enable = (config ~= nil and config.plugin_updator.enable) or default_config.plugin_updator.enable
   local init = function(extensions)
     for _, extension in ipairs(extensions) do
       extension()
