@@ -13,7 +13,7 @@ local default_config = {
 }
 
 local init = function(notify_extensions)
-  for _, extension in pairs(notify_extensions) do
+  for _, extension in ipairs(notify_extensions) do
     extension()
   end
 end
@@ -24,11 +24,11 @@ M.setup = function(config)
   local plugin_updator_enable = config.plugin_updator.enable or default_config.plugin_updator.enable
 
   if lsp_loader_enable then
-    table.insert(notify_extensions, { lsp_loader = lsp_loader })
+    table.insert(notify_extensions, lsp_loader)
   end
 
   if plugin_updator_enable then
-    table.insert(notify_extensions, { plugin_updator = plugin_updator })
+    table.insert(notify_extensions, plugin_updator)
   end
 
   init(notify_extensions)
