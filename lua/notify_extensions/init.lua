@@ -37,8 +37,6 @@ M.setup = function(config)
     table.insert(notify_extensions, plugin_updator(notify))
   end
 
-  print(vim.inspect(notify_extensions))
-
   init(notify_extensions)
 end
 
