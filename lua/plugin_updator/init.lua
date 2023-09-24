@@ -1,13 +1,13 @@
-local nvim_config = vim.fn.stdpath "config"
-local chadrc_config = require("core.utils").load_config()
-local config_branch = chadrc_config.options.nvchad_branch
-local notification = { nv_chad = nil, mason = nil }
-local spinners = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }
-local content = { " ", " ", "" }
-local header = " 󰓂 Update status "
-local new_cmd = vim.api.nvim_create_user_command
-
 return function(notify)
+  local nvim_config = vim.fn.stdpath "config"
+  local chadrc_config = require("core.utils").load_config()
+  local config_branch = chadrc_config.options.nvchad_branch
+  local notification = { nv_chad = nil, mason = nil }
+  local spinners = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }
+  local content = { " ", " ", "" }
+  local header = " 󰓂 Update status "
+  local new_cmd = vim.api.nvim_create_user_command
+
   local function handleNotification(status, icon)
     if status == "create" then
       notification.nv_chad = notify("NvUpdater init", "info", { title = header, icon = icon })

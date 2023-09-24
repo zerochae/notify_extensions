@@ -1,6 +1,5 @@
 return function(notify)
   local client_notifs = {}
-
   local spinner_frames = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }
 
   local function update_spinner(name, token)
