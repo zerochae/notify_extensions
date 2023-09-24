@@ -6,10 +6,10 @@ local notify_extensions = {}
 
 local default_config = {
   lsp_loader = {
-    enable = false,
+    enable = true,
   },
   plugin_updator = {
-    enable = false,
+    enable = true,
   },
 }
 
