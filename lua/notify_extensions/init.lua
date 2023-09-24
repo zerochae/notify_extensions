@@ -1,8 +1,7 @@
 local M = {}
-local notify = vim.notify
+local notify = require "notify"
 local lsp_loader = require "lsp_loader"
 local plugin_updator = require "plugin_updator"
-local notify_extensions = {}
 
 local default_config = {
   lsp_loader = {
@@ -13,13 +12,14 @@ local default_config = {
   },
 }
 
-local init = function()
+local init = function(notify_extensions)
   for _, extension in pairs(notify_extensions) do
     extension()
   end
 end
 
 M.setup = function(config)
+  local notify_extensions = {}
   local lsp_loader_enable = config.lsp_loader.enable or default_config.lsp_loader.enable
   local plugin_updator_enable = config.plugin_updator.enable or default_config.plugin_updator.enable
 
@@ -31,7 +31,7 @@ M.setup = function(config)
     table.insert(notify_extensions, plugin_updator(notify))
   end
 
-  init()
+  init(notify_extensions)
 end
 
 return M
