@@ -58,7 +58,10 @@ return function(notify)
           icon = spinner_frames[1],
           timeout = false,
           hidden = false,
-          replace = notif_data.notification,
+          replace = notif_data.notification.id,
+          on_close = function()
+            client_notifs.current = nil
+          end,
         })
 
         client_notifs[name] = {
