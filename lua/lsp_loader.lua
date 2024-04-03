@@ -1,29 +1,44 @@
 return function(notify)
+  local METHOD = "info"
   local client_notifs = {}
   local spinner_frames = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }
 
-  local function update_spinner(name, token)
-    local notif_data = client_notifs[name]
-
-    if notif_data and notif_data.spinner then
-      local new_spinner = (notif_data.spinner + 1) % #spinner_frames
-
-      local new_notif =
-        notify(nil, nil, { hidden = true, icon = spinner_frames[new_spinner], replace = notif_data.notification })
-      client_notifs[name] = {
-        notification = new_notif,
-        spinner = new_spinner,
-      }
-
-      vim.defer_fn(function()
-        update_spinner(name, token)
-      end, 100)
+  local function get_notif_data(client_id, token)
+    if not client_notifs[client_id] then
+      client_notifs[client_id] = {}
     end
+
+    if not client_notifs[client_id][token] then
+      client_notifs[client_id][token] = {}
+    end
+
+    return client_notifs[client_id][token]
+  end
+
+  local function update_spinner(client_id, token)
+    local notif_data = get_notif_data(client_id, token)
+
+    if not notif_data.spinner then
+      return
+    end
+
+    local new_spinner = (notif_data.spinner + 1) % #spinner_frames
+    notif_data.spinner = new_spinner
+
+    notif_data.notification = notify(nil, nil, {
+      hide_from_history = true,
+      icon = spinner_frames[new_spinner],
+      replace = notif_data.notification,
+    })
+
+    vim.defer_fn(function()
+      update_spinner(client_id, token)
+    end, 100)
   end
 
   local function format_title(title, client_name)
-    -- return client_name .. (#title > 0 and ": " .. title or "")
-    return "LSP - " .. client_name
+    return client_name .. (#title > 0 and ": " .. title or "")
+    -- return "LSP - " .. client_name
   end
 
   local function format_message(message, percentage)
@@ -44,51 +59,40 @@ return function(notify)
       return
     end
 
-    if val.kind then
-      if not client_notifs[name] then
-        client_notifs[name] = {}
-      end
+    if not val.kind then
+      return
+    end
 
-      local notif_data = client_notifs[name]
+    local notif_data = get_notif_data(client_id, result.token)
 
-      if val.kind == "begin" then
-        local message = format_message(val.message, val.percentage)
-        local notification = notify(message, "info", {
-          title = format_title(val.title, name),
-          icon = spinner_frames[1],
-          timeout = false,
-          hidden = false,
-          replace = notif_data.notification,
-        })
-
-        client_notifs[name] = {
-          notification = notification,
-          spinner = 1,
-        }
-
-        update_spinner(name, result.token)
-      elseif val.kind == "report" and notif_data then
-        local new_notif = notify(
-          format_message(val.message, val.percentage),
-          "info",
-          { replace = notif_data.notification, hidden = false }
-        )
-
-        client_notifs[name] = {
-          notification = new_notif,
-          spinner = notif_data.spinner,
-        }
-      elseif val.kind == "end" and notif_data then
-        local new_notif = notify(
-          val.message and format_message(val.message) or " " .. name,
-          "info",
-          { title = " Language Server Protocol", icon = "", replace = notif_data.notification, timeout = 3000 }
-        )
-
-        client_notifs[name] = {
-          notification = new_notif,
-        }
-      end
+    if val.kind == "begin" then
+      local message = format_message(val.message, val.percentage)
+      local options = {
+        title = format_title(val.title, name),
+        icon = spinner_frames[1],
+        timeout = false,
+        hide_from_history = false,
+      }
+      notif_data.notification = notify(message, METHOD, options)
+      notif_data.spinner = 1
+      update_spinner(client_id, result.token)
+    elseif val.kind == "report" and notif_data then
+      local message = format_message(val.message, val.percentage)
+      local options = {
+        replace = notif_data.notification,
+        hide_from_history = false,
+      }
+      notif_data.notification = notify(message, METHOD, options)
+    elseif val.kind == "end" and notif_data then
+      local message = val.message and format_message(val.message) or " " .. name
+      local options = {
+        title = " Language Server Protocol",
+        icon = "",
+        replace = notif_data.notification,
+        timeout = 3000,
+      }
+      notif_data.notification = notify(message, METHOD, options)
+      notif_data.spinner = nil
     end
   end
 end
