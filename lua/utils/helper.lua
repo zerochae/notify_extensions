@@ -3,20 +3,16 @@ local client_notifs = {}
 
 M.spinner_frames = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }
 
-M.get_notif_data = function(client_id, token)
-  if not client_notifs[client_id] then
-    client_notifs[client_id] = {}
+M.get_notif_data = function(name)
+  if not client_notifs[name] then
+    client_notifs[name] = {}
   end
 
-  if not client_notifs[client_id][token] then
-    client_notifs[client_id][token] = {}
-  end
-
-  return client_notifs[client_id][token]
+  return client_notifs[name]
 end
 
-M.update_spinner = function(client_id, token, notify)
-  local notif_data = M.get_notif_data(client_id, token)
+M.update_spinner = function(name, notify)
+  local notif_data = M.get_notif_data(name)
 
   if not notif_data.spinner then
     return
@@ -32,7 +28,7 @@ M.update_spinner = function(client_id, token, notify)
   })
 
   vim.defer_fn(function()
-    M.update_spinner(client_id, token)
+    M.update_spinner(name, notify)
   end, 100)
 end
 
