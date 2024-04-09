@@ -1,4 +1,4 @@
-return function(notify)
+return function(notify, ignore_lsp)
   local format = require "utils.format"
   local helper = require "utils.helper"
   local INFO = "info"
@@ -58,8 +58,10 @@ return function(notify)
     local client_id = ctx.client_id
     local name = vim.lsp.get_client_by_id(client_id).name
 
-    if name == "null-ls" then
-      return
+    for _, lsp in ipairs(ignore_lsp) do
+      if name == lsp then
+        return
+      end
     end
 
     local notif_data = helper.get_notif_data(name)
